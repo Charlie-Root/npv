@@ -39,9 +39,13 @@ sudo go run ./main.go run batch
 ```
 
 You will see a processbar of the run :-)
+```
+
 
 Cleanup:
 ```
 go run ./main.go cleanup
 ```
+
+## Screenshots
 
