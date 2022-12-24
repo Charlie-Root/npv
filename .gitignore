@@ -6,7 +6,6 @@
 *.so
 *.dylib
 
-bin/
 output/
 _output/
 
