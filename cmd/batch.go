@@ -34,7 +34,6 @@ to quickly create a Cobra application.`,
 			logger.Error("IPLIST IS EMPTY")
 		}
 
-		logger.Debug("Starting!")
 		for i := 0; i < len(iplist); i++ {
 			bar.Add(1)
 

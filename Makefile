@@ -22,4 +22,5 @@ static-files:
 	@statik -src=./web -f
 
 build-bin:
-	$(GO_FLAGS) go build -o $(BIN_DIR)/mtrplot main.go
+	$(GO_FLAGS) go build -o $(BIN_DIR)/npv main.go
+	
