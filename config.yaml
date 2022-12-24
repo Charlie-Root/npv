@@ -1,0 +1,12 @@
+dbtype: sqlite3
+dbfilename: sqlite.db
+
+mtrview:
+  count: 2
+  timeout: 30
+  interval: 5
+  maxhops: 20
+  maxhops_unknown: 5
+  ringbuffer: 50
+  ptr_lookup: true
+  src_address:

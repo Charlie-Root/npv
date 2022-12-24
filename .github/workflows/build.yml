@@ -1,0 +1,55 @@
+name: Build go app
+
+on:
+  push:
+    branches:
+    - main
+    - develop
+    #paths:
+    #- 'cmd/*'
+    #- 'pkg/*'
+    #- 'vendor/*'
+
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Set up Go 1.19
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.19
+      id: go
+    
+    - name: Check out code
+      uses: actions/checkout@v1
+    
+    - name: "All updates"
+      run: sudo apt-get update && sudo apt-get -y upgrade
+    
+    # Install all the dependencies
+    - name: Install dependencies
+      run: |
+        go version
+        go get -u golang.org/x/lint/golint
+
+    - name: Run build
+      run: mkdir bin/ && GOFLAGS=-mod=mod go build -o bin/mtrplot main.go
+    
+    - name: Run the app
+      run: sudo go run ./main.go run single 1.1.1.1
+
+  
+  release-linux-amd64:
+    name: release linux/amd64
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: wangyoucao577/go-release-action@v1.34
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        goos: linux
+        goarch: amd64
+        goversion: 1.19

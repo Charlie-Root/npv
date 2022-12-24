@@ -1,0 +1,85 @@
+<head>
+  <style>
+    body {
+      margin: 0;
+    }
+  </style>
+  <script src="/js/three.min.js"></script>
+  <script src="/js/three-spritetext.min.js"></script>
+  <script src="/js/3d-force-graph.min.js"></script>
+  <script src="/js/dat.gui.js"></script>
+</head>
+
+<body>
+  <div id="3d-graph"></div>
+
+  <script>
+    const elem = document.getElementById('3d-graph');
+
+    const initData = {
+      nodes: [{ id: 0 }],
+      links: []
+    };
+
+    const NODE_REL_SIZE = 1;
+    const graph = ForceGraph3D()
+      (elem)
+      .jsonUrl('/graph')
+
+
+      .dagMode('td')
+      .dagLevelDistance(50)
+      .nodeRelSize(NODE_REL_SIZE)
+      .nodeId('id')
+      .nodeVal('HostCount')
+      .nodeLabel('HostPTR')
+      .nodeAutoColorBy('HostTTL')
+      .nodeOpacity(0.9)
+      .linkCurvature('curvature')
+      .linkCurveRotation('rotation')
+      .linkDirectionalParticles(2)
+      .onNodeClick(node => {
+        // Aim at node from outside it
+        const distance = 40;
+        const distRatio = 1 + distance / Math.hypot(node.x, node.y, node.z);
+
+        const newPos = node.x || node.y || node.z
+          ? { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio }
+          : { x: 0, y: 0, z: distance }; // special case if node is in (0,0,0)
+
+        graph.cameraPosition(
+          newPos, // new position
+          node, // lookAt ({ x, y, z })
+          3000  // ms transition duration
+        );
+      })
+      .linkThreeObjectExtend(true)
+      .linkThreeObject(link => {
+        // extend link with text sprite
+        const sprite = new SpriteText(`${link.TargetAVG} > ${link.TargetLoss}`);
+        sprite.color = 'lightgrey';
+        sprite.textHeight = 1.5;
+        return sprite;
+      })
+      .linkPositionUpdate((sprite, { start, end }) => {
+        const middlePos = Object.assign(...['x', 'y', 'z'].map(c => ({
+          [c]: start[c] + (end[c] - start[c]) / 2 // calc middle point
+        })));
+
+        // Position sprite
+        Object.assign(sprite.position, middlePos);
+      })
+      .linkAutoColorBy(d => gData.nodes[d.source].HostTTL)
+      .linkDirectionalParticleWidth(1.8)
+      .linkDirectionalParticleSpeed(0.006)
+      .linkColor(() => 'rgba(255,255,255,0.5)');
+
+
+    graph.d3Force('charge').strength(-25);
+    graph.onEngineStop(() => graph.zoomToFit(400));
+
+
+
+
+  </script>
+</body>

@@ -1,0 +1,100 @@
+
+<head>
+  <style> body { margin: 0; } </style>
+  <script src="../js/three.min.js"></script>
+  <script src="../js/three-spritetext.min.js"></script>
+  <script src="../js/3d-force-graph.min.js"></script>
+  <script src="../js/dat.gui.js"></script>
+</head>
+
+<body>
+  <div id="3d-graph"></div>
+
+  <script>
+    const elem = document.getElementById('3d-graph');
+    const graph = ForceGraph3D()
+      (elem)
+        .jsonUrl('data/graph.json')
+        .nodeLabel(function(n){
+          if (n.type == "pod" && n.hasOwnProperty('status') && n.status != "Running") {
+            return n.name + '<br/> Status: ' + n.status + '<br/> StatusMsg: ' + n.statusmessage
+          } else {
+            return n.name
+          }
+        })
+        .nodeOpacity(1)
+        .nodeAutoColorBy(function(n){
+          if (n.type == "namespace") {
+            return n.type
+          } else if (n.type == "pod") {
+            return n.namespace
+          } else if (n.type == "node") {
+            return n.type
+          }
+        })
+        .nodeThreeObject(function(n){
+          if (n.type == "pod" && n.hasOwnProperty('status')
+            && n.status != "Running" && n.status != "Succeeded") {
+            var mesh = new THREE.Mesh(
+              new THREE.DodecahedronGeometry(20),
+              new THREE.MeshLambertMaterial({
+                color: Math.round(Math.random() * Math.pow(2, 24)),
+                transparent: false,
+                opacity: 1
+            }))
+            return mesh
+          }
+          if (n.type == "node") {
+            var mesh = new THREE.Mesh(
+              new THREE.BoxGeometry(20,20,20),
+              new THREE.MeshLambertMaterial({
+                color: Math.round(Math.random() * Math.pow(2, 24)),
+                transparent: false,
+                opacity: 1
+            }))
+            return mesh
+          }
+          if (n.type == "namespace") {
+            const sprite = new SpriteText(n.name);
+            sprite.color = n.color;
+            sprite.textHeight = 5;
+            return sprite;
+          }
+        })
+        .linkAutoColorBy('value')
+        .linkWidth(0.5)
+        .linkDirectionalParticles(10)
+        .numDimensions(3)
+        .nodeResolution(15)
+        .linkDirectionalParticleSpeed(0.005)
+        .onNodeHover(node => elem.style.cursor = node ? 'pointer' : null)
+        .onNodeClick(node => {
+          // Aim at node from outside it
+          const distance = 40;
+          const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
+          Graph.cameraPosition(
+            { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio },
+            node, // lookAt ({ x, y, z })
+            3000  // ms transition duration
+          );
+        });
+
+        const linkForce = graph
+          .d3Force('link')
+          .distance(link => settings.distance);
+
+        // Define GUI
+        const Settings = function() {
+          this.distance = 100;
+        };
+        const settings = new Settings();
+        const gui = new dat.GUI();
+        const controller = gui.add(settings, 'distance', 0, 500);
+        controller.onChange(updateLinkDistance);
+        function updateLinkDistance() {
+          linkForce.distance(link => settings.distance);
+          graph.numDimensions(3);
+        }
+  </script>
+</body>
+
