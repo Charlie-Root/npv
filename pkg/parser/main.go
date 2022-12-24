@@ -6,9 +6,9 @@ import (
 	"sort"
 	"strconv"
 
-	"github.com/Charlie-Root/mtrview/pkg/db"
-	"github.com/Charlie-Root/mtrview/pkg/logging"
-	"github.com/Charlie-Root/mtrview/pkg/mtr"
+	"github.com/Charlie-Root/npv/pkg/db"
+	"github.com/Charlie-Root/npv/pkg/logging"
+	"github.com/Charlie-Root/npv/pkg/mtr"
 	"github.com/bitly/go-simplejson"
 	"github.com/jamesog/iptoasn"
 )

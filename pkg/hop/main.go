@@ -8,7 +8,7 @@ import (
 	"net"
 	"time"
 
-	"github.com/Charlie-Root/mtrview/pkg/icmp"
+	"github.com/Charlie-Root/npv/pkg/icmp"
 	gm "github.com/buger/goterm"
 )
 

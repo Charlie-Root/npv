@@ -7,9 +7,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/Charlie-Root/mtrview/pkg/config"
-	"github.com/Charlie-Root/mtrview/pkg/db"
-	"github.com/Charlie-Root/mtrview/pkg/logging"
+	"github.com/Charlie-Root/npv/pkg/config"
+	"github.com/Charlie-Root/npv/pkg/db"
+	"github.com/Charlie-Root/npv/pkg/logging"
 	"github.com/spf13/cobra"
 )
 

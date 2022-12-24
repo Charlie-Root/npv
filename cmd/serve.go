@@ -8,8 +8,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/Charlie-Root/mtrview/pkg/export"
-	_ "github.com/Charlie-Root/mtrview/statik"
+	"github.com/Charlie-Root/npv/pkg/export"
+	_ "github.com/Charlie-Root/npv/statik"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

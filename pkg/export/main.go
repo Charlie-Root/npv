@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/Charlie-Root/mtrview/pkg/db"
-	"github.com/Charlie-Root/mtrview/pkg/logging"
+	"github.com/Charlie-Root/npv/pkg/db"
+	"github.com/Charlie-Root/npv/pkg/logging"
 	_ "github.com/mattn/go-sqlite3" // Import the SQLite driver
 )
 

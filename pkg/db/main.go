@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"strconv"
 
-	"github.com/Charlie-Root/mtrview/pkg/logging"
+	"github.com/Charlie-Root/npv/pkg/logging"
 	_ "github.com/go-sql-driver/mysql" // MySQL driver
 	_ "github.com/mattn/go-sqlite3"    // SQLite driver
 )

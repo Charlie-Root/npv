@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/Charlie-Root/mtrview/cmd"
+	"github.com/Charlie-Root/npv/cmd"
 	_ "github.com/mattn/go-sqlite3"
 )
 

@@ -6,8 +6,8 @@ package cmd
 import (
 	"sync"
 
-	"github.com/Charlie-Root/mtrview/pkg/mtr"
-	"github.com/Charlie-Root/mtrview/pkg/parser"
+	"github.com/Charlie-Root/npv/pkg/mtr"
+	"github.com/Charlie-Root/npv/pkg/parser"
 	tm "github.com/buger/goterm"
 	"github.com/schollz/progressbar/v3"
 	"github.com/spf13/cobra"

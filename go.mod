@@ -1,4 +1,4 @@
-module github.com/Charlie-Root/mtrview
+module github.com/Charlie-Root/npv
 
 go 1.19
 

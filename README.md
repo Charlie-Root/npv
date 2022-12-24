@@ -1,2 +1,2 @@
 
-[![Build go app](https://github.com/Charlie-Root/mtrview/actions/workflows/build.yml/badge.svg)](https://github.com/Charlie-Root/mtrview/actions/workflows/build.yml)
+[![Build go app](https://github.com/Charlie-Root/npv/actions/workflows/build.yml/badge.svg)](https://github.com/Charlie-Root/npv/actions/workflows/build.yml)

@@ -6,8 +6,8 @@ package cmd
 import (
 	"sync"
 
-	"github.com/Charlie-Root/mtrview/pkg/mtr"
-	"github.com/Charlie-Root/mtrview/pkg/parser"
+	"github.com/Charlie-Root/npv/pkg/mtr"
+	"github.com/Charlie-Root/npv/pkg/parser"
 	tm "github.com/buger/goterm"
 	"github.com/spf13/cobra"
 )
@@ -25,7 +25,7 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 
-		m, ch, err := mtr.NewMTR("telia.se", srcAddr, TIMEOUT, INTERVAL, HOP_SLEEP, MAX_HOPS, MAX_UNKNOWN_HOPS, RING_BUFFER_SIZE, PTR_LOOKUP)
+		m, ch, err := mtr.NewMTR(args[0], srcAddr, TIMEOUT, INTERVAL, HOP_SLEEP, MAX_HOPS, MAX_UNKNOWN_HOPS, RING_BUFFER_SIZE, PTR_LOOKUP)
 
 		if err != nil {
 			logger.Error(err.Error())
