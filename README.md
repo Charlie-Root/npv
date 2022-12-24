@@ -39,7 +39,7 @@ sudo go run ./main.go run batch
 ```
 
 You will see a processbar of the run :-)
-```
+
 
 
 Cleanup:
@@ -49,3 +49,8 @@ go run ./main.go cleanup
 
 ## Screenshots
 
+![Simpel Test!](/examples/example1.png "Example1")
+
+![Simpel Test!](/examples/example2.png "Example2")
+
+![Batch Test!](/examples/example3.png "Example3")
