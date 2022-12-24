@@ -36,7 +36,7 @@ jobs:
         go get -u golang.org/x/lint/golint
 
     - name: Run build
-      run: mkdir bin/ && GOFLAGS=-mod=mod go build -o bin/mtrplot main.go
+      run: GOFLAGS=-mod=mod go build -o bin/mtrplot main.go
     
     - name: Run the app
       run: sudo go run ./main.go run single 1.1.1.1
