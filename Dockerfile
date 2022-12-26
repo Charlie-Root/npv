@@ -9,6 +9,7 @@ WORKDIR /app
 
 COPY bin/npv /bin/
 COPY config.yaml ./
+RUN touch /app/hosts.json
 
 EXPOSE 3000
 
