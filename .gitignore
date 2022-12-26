@@ -12,6 +12,12 @@ _output/
 # Test binary, built with `go test -c`
 *.test
 
+# Text files
+*.txt
+
+# Debian folder
+debian/
+npv/
 # Json files
 *.json
 
