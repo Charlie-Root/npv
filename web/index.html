@@ -34,7 +34,7 @@
 <body>
   <!-- HTML for the toolbar -->
   <div id="toolbar">
-    <div class="toolbar-item" id="reset-button">Reset</div>
+
     <div class="toolbar-item" id="zoom-in-button">Zoom In</div>
     <div class="toolbar-item" id="zoom-out-button">Zoom Out</div>
   </div>
@@ -47,6 +47,7 @@
     const resetButton = document.getElementById("reset-button");
     const zoomInButton = document.getElementById("zoom-in-button");
     const zoomOutButton = document.getElementById("zoom-out-button");
+
 
 
     const initData = {
@@ -109,17 +110,15 @@
 
 
     graph.d3Force('charge').strength(-25);
+    graph.onEngineStop(() => graph.zoomToFit(400));
 
+    setInterval(() => {
+      const { nodes, links } = graph.graphData();
+      const id = nodes.length;
+      graph.jsonUrl('/graph');
+      console.log("reloading data")
+    }, 60000);
 
-    // Bind the reset button to the force graph
-    resetButton.addEventListener("click", () => {
-      graph.reset();
-    });
-
-    // Bind the zoom in button to the force graph
-    zoomInButton.addEventListener("click", () => {
-      graph.cameraPosition.z /= 1.2;
-    });
 
 
   </script>
