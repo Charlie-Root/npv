@@ -1,7 +1,28 @@
 <head>
   <style>
-    body {
-      margin: 0;
+    /* Style for the toolbar container */
+    #toolbar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50px;
+      background-color: #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+    }
+
+    /* Style for the toolbar items */
+    #toolbar .toolbar-item {
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .graph-container {
+      top: 50px !important;
+      position: absolute !important;
     }
   </style>
   <script src="/js/three.min.js"></script>
@@ -11,10 +32,22 @@
 </head>
 
 <body>
-  <div id="3d-graph"></div>
+  <!-- HTML for the toolbar -->
+  <div id="toolbar">
+    <div class="toolbar-item" id="reset-button">Reset</div>
+    <div class="toolbar-item" id="zoom-in-button">Zoom In</div>
+    <div class="toolbar-item" id="zoom-out-button">Zoom Out</div>
+  </div>
+
+
+  <div id="3d-graph" class="graph-container"></div>
 
   <script>
     const elem = document.getElementById('3d-graph');
+    const resetButton = document.getElementById("reset-button");
+    const zoomInButton = document.getElementById("zoom-in-button");
+    const zoomOutButton = document.getElementById("zoom-out-button");
+
 
     const initData = {
       nodes: [{ id: 0 }],
@@ -76,9 +109,17 @@
 
 
     graph.d3Force('charge').strength(-25);
-    graph.onEngineStop(() => graph.zoomToFit(400));
 
 
+    // Bind the reset button to the force graph
+    resetButton.addEventListener("click", () => {
+      graph.reset();
+    });
+
+    // Bind the zoom in button to the force graph
+    zoomInButton.addEventListener("click", () => {
+      graph.cameraPosition.z /= 1.2;
+    });
 
 
   </script>

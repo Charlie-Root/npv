@@ -2,7 +2,7 @@ dbtype: sqlite3
 dbfilename: sqlite.db
 
 mtrview:
-  count: 10
+  count: 1
   timeout: 30
   interval: 5
   maxhops: 20
