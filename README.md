@@ -40,7 +40,13 @@ sudo go run ./main.go run batch
 
 You will see a processbar of the run :-)
 
+You can also compile a hosts.json based on an ASN number. 
 
+```
+go run ./main.go generate <ASN>
+```
+
+This function retrieves all prefixes belonging to the ASN and writes them as separate IP addresses to hosts.json.
 
 Cleanup:
 ```
