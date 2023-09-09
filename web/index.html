@@ -112,12 +112,12 @@
     graph.d3Force('charge').strength(-25);
     graph.onEngineStop(() => graph.zoomToFit(400));
 
-    setInterval(() => {
-      const { nodes, links } = graph.graphData();
-      const id = nodes.length;
-      graph.jsonUrl('/graph');
-      console.log("reloading data")
-    }, 60000);
+    // setInterval(() => {
+    //   const { nodes, links } = graph.graphData();
+    //   const id = nodes.length;
+    //   graph.jsonUrl('/graph');
+    //   console.log("reloading data")
+    // }, 60000);
 
 
 
