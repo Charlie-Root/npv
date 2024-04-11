@@ -14,13 +14,9 @@ import (
 // generateCmd represents the generate command
 var generateCmd = &cobra.Command{
 	Use:   "generate",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Generate a hosts.json from any ASN",
+	Long: `Create a hosts file (hosts.json) from all resources in a given ASN:
+	go run ./main.go generate <ASN>`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("generate called")
 

@@ -1,6 +1,11 @@
 dbtype: sqlite3
 dbfilename: sqlite.db
 
+api: true
+apiport: 8080
+apiserver: localhost
+apisecure: false
+
 mtrview:
   count: 1
   timeout: 30

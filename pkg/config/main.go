@@ -12,6 +12,10 @@ type Config struct {
     // For example:
     DbType string `json:"dbtype" yaml:"dbtype"`
     DbFilename string `json:"dbfilename" yaml:"dbfilename"`
+    Api bool `json:"api" yaml:"api"`
+    ApiPort int `json:"apiport" yaml:"apiport"`
+    ApiServer string `json:"apiserver" yaml:"apiserver"`
+    ApiSecure bool `json:"apisecure" yaml:"apisecure"`
     MTRView MTRView
 }
 type MTRView struct {

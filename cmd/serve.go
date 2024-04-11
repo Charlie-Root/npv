@@ -20,7 +20,7 @@ var port string
 // serveCmd represents the serve command
 var serveCmd = &cobra.Command{
 	Use:   "serve",
-	Short: "A brief description of your command",
+	Short: "Fire up the server and see the results in the browser",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 
@@ -41,11 +41,11 @@ to quickly create a Cobra application.`,
 			logger.Debug("Set!")
 			writer.Header().Set("Content-Type", "application/json")
 			if _, err := writer.Write(data); err != nil {
-				fmt.Printf("faild to write response data: %s", err)
+				fmt.Printf("failed to write response data: %s", err)
 			}
 		})
 		if err := http.ListenAndServe(getPort(), nil); err != nil {
-			panic(fmt.Sprintf("faild to start server: %s", err))
+			panic(fmt.Sprintf("failed to start server: %s", err))
 		}
 	},
 }

@@ -6,6 +6,8 @@ import (
 	"sort"
 	"strconv"
 
+	"github.com/Charlie-Root/npv/pkg/apiclient"
+	"github.com/Charlie-Root/npv/pkg/config"
 	"github.com/Charlie-Root/npv/pkg/db"
 	"github.com/Charlie-Root/npv/pkg/logging"
 	"github.com/Charlie-Root/npv/pkg/mtr"
@@ -35,108 +37,137 @@ func ParseJsonFile(jsonFile string) []string {
 	return iplist
 
 }
-
 func ParseResults(m mtr.MTR, database db.DB) {
+    var c, _ = config.LoadYAML("config.yaml")
 
-	// Get the keys from the map and sort them.
-	keys := make([]int, 0, len(m.Statistic))
-	for key := range m.Statistic {
-		keys = append(keys, key)
-	}
+    // Initialize the API client if the API is enabled
+    var hostClient *apiclient.APIClient
+    var linkClient *apiclient.APIClient
 
-	sort.Ints(keys)
+    if c.Api {
+        logger.Warning("API is enabled")
+        hostClient = apiclient.NewAPIClient(c)
+        linkClient = apiclient.NewAPIClient(c)
+    }
 
-	for _, key := range keys {
+    // Get the keys from the map and sort them.
+    keys := make([]int, 0, len(m.Statistic))
+    for key := range m.Statistic {
+        keys = append(keys, key)
+    }
 
-		if len(m.Statistic[key].Targets) == 1 {
+    sort.Ints(keys)
 
-			var searchHostname string
-			if m.Statistic[key].Targets[0] == "" {
-				searchHostname = "***"
-			} else {
-				searchHostname = m.Statistic[key].Targets[0]
-			}
+    for _, key := range keys {
+        if len(m.Statistic[key].Targets) == 1 {
+            var searchHostname string
+            if m.Statistic[key].Targets[0] == "" {
+                searchHostname = "***"
+            } else {
+                searchHostname = m.Statistic[key].Targets[0]
+            }
 
-			_, host_address, host_count := database.GetHostByAddress(searchHostname, m.Statistic[key].TTL)
-			//ug(host_address)
+            _, hostAddress, hostCount := database.GetHostByAddress(searchHostname, m.Statistic[key].TTL)
+            if hostAddress != "" {
+                if c.Api {
+                    logger.Warning("Writing to Remote API")
+                    // Call apiclient.AddHost with the appropriate data
+                    host := apiclient.Host{
+                        ID:        "example",
+                        Name:      searchHostname,
+                        Address:   hostAddress,
+                        HostPTR:   getPTR(searchHostname),
+                        HostASN:   getASN(searchHostname),
+                        HostTTL:   m.Statistic[key].TTL,
+                    }
+                    // AddHost returns an error, handle it if necessary
+                    err := hostClient.AddHost(host)
+                    if err != nil {
+                        logger.Warning("Something went wrong")
+                    }
+                } else {
+                    logger.Warning("Writing to local DB")
+                    database.UpdateHostCount(searchHostname, hostCount)
+                }
+            } else {
+                // Create a new host entry
+                host := db.Host{
+                    Name:      searchHostname,
+                    Address:   searchHostname,
+                    HostPTR:   getPTR(searchHostname),
+                    HostASN:   getASN(searchHostname),
+                    HostTTL:   m.Statistic[key].TTL,
+                    HostCount: 1,
+                }
+                // Insert the host into the database
+                if err := database.InsertHost(host); err != nil {
+                    logger.Error(err.Error())
+                    return
+                }
+            }
+        } else {
+            logger.Error(strconv.Itoa(m.Statistic[key].TTL) + " - Looks like we found multiple possible targets ??")
+        }
 
-			if host_address != "" {
-				//logger.Warning("update hostcount")
-				database.UpdateHostCount(m.Statistic[key].Targets[0], host_count)
-			} else {
-				//logger.Warning("add host to db")
-				//logger.Debug(searchHostname)
+        if value, ok := m.Statistic[key-1]; ok {
+            curAddress := m.Statistic[key].Targets[0]
+            prevAddress := value.Targets[0]
+            curTTL := m.Statistic[key].TTL
 
-				host := db.Host{
-					Name:      searchHostname,
-					Address:   searchHostname,
-					HostPTR:   getPTR(searchHostname),
-					HostASN:   getASN(searchHostname),
-					HostTTL:   m.Statistic[key].TTL,
-					HostCount: 1,
-				}
+            if curAddress == "" {
+                curAddress = "***"
+            }
+            if prevAddress == "" {
+                prevAddress = "***"
+            }
 
-				if err := database.InsertHost(host); err != nil {
-					logger.Error(err.Error())
-					return
-				}
-			}
+            hostFrom, hostTo, _, linkCounter := database.GetLink(prevAddress, curAddress, curTTL)
 
-		} else {
-			logger.Error(strconv.Itoa(m.Statistic[key].TTL) + " - Looks like we found multiple possible targets ??")
-
-		}
-		if value, ok := m.Statistic[key-1]; ok {
-			curAddress := m.Statistic[key].Targets[0]
-			prevAddress := value.Targets[0]
-
-			curTTL := m.Statistic[key].TTL
-			//prevTTL := value.TTL
-
-			if curAddress == "" {
-				curAddress = "***"
-			}
-			if prevAddress == "" {
-				prevAddress = "***"
-			}
-
-			//cur_host_id, _, _ := database.GetHostByAddress(curAddress, curTTL)
-			//prev_host_id, _, _ := database.GetHostByAddress(prevAddress, prevTTL)
-
-			host_from, host_to, _, linkCounter := database.GetLink(prevAddress, curAddress, curTTL)
-
-			if host_from == "" && host_to == "" {
-				// add the link here
-				//logger.Warning("Add the link with TTL: " + strconv.Itoa(curTTL))
-
-				link := db.Link{
-					Source:      prevAddress,
-					Target:      curAddress,
-					TargetTTL:   curTTL,
-					TargetLoss:  m.Statistic[key].Lost,
-					TargetSNT:   m.Statistic[key].Sent,
-					TargetLast:  int(m.Statistic[key].Last.Elapsed),
-					TargetAVG:   int(m.Statistic[key].Avg()),
-					TargetBest:  int(m.Statistic[key].Best.Elapsed),
-					TargetWRST:  int(m.Statistic[key].Worst.Elapsed),
-					TargetStDev: int(m.Statistic[key].Stdev()),
-					LinkCount:   1,
-				}
-
-				if err := database.InsertLink(link); err != nil {
-					logger.Error(err.Error())
-					return
-				}
-			} else {
-				database.UpdateLinkCount(prevAddress, curAddress, curTTL, linkCounter)
-				//logger.Warning("Update the link")
-			}
-
-		}
-
-	}
-
+            if hostFrom == "" && hostTo == "" {
+                if c.Api {
+                    logger.Warning("Writing link to Remote API")
+                    // Call apiclient.AddLink with the appropriate data
+                    link := apiclient.Link{
+                        Source:      prevAddress,
+                        Target:      curAddress,
+                        TargetTTL:   curTTL,
+                        // Add other fields as needed
+                    }
+                    // AddLink returns an error, handle it if necessary
+                    err := linkClient.AddLink(link)
+                    if err != nil {
+                        logger.Warning("Something went wrong")
+                    }
+                } else {
+                    logger.Warning("Writing link to local DB")
+                    // Add the link
+                    link := db.Link{
+                        Source:      prevAddress,
+                        Target:      curAddress,
+                        TargetTTL:   curTTL,
+                        TargetLoss:  m.Statistic[key].Lost,
+                        TargetSNT:   m.Statistic[key].Sent,
+                        TargetLast:  int(m.Statistic[key].Last.Elapsed),
+                        TargetAVG:   int(m.Statistic[key].Avg()),
+                        TargetBest:  int(m.Statistic[key].Best.Elapsed),
+                        TargetWRST:  int(m.Statistic[key].Worst.Elapsed),
+                        TargetStDev: int(m.Statistic[key].Stdev()),
+                        LinkCount:   1,
+                    }
+                    // Insert the link into the database
+                    if err := database.InsertLink(link); err != nil {
+                        logger.Error(err.Error())
+                        return
+                    }
+                }
+            } else {
+                database.UpdateLinkCount(prevAddress, curAddress, curTTL, linkCounter)
+            }
+        }
+    }
 }
+
+
 
 func getPTR(ip string) string {
 	names, err := net.LookupAddr(ip)
